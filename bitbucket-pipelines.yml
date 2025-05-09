@@ -1,0 +1,22 @@
+image: node:16
+
+pipelines:
+  branches:
+    main:
+      - step:
+          name: Install, Build, and Deploy
+          caches:
+            - node
+          script:
+            # Install dependencies
+            - npm install
+            # Build Angular app
+            - npm run build -- --configuration=production
+            # Install AWS CLI
+            - apt-get update && apt-get install -y awscli
+            # Deploy to S3
+            - aws s3 sync ./dist/your-angular-app s3://your-angular-app-bucket --delete
+          variables:
+            AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+            AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+            AWS_DEFAULT_REGION: 'us-east-1'
